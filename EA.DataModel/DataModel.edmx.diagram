@@ -4,8 +4,8 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="1aa9ea41bc1647778510a85214a22c31" Name="Diagram1">
-        <EntityTypeShape EntityType="EmailAnalyticsModel.Raw_Data" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+      <Diagram DiagramId="2756a0ff1b0c42b8a7907c59c236ae3c" Name="Diagram1">
+        <EntityTypeShape EntityType="EmailAnalyticsModel.PackageDetail" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

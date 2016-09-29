@@ -4,73 +4,52 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="EmailAnalyticsModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Raw_Data">
+      <Schema Namespace="EmailAnalyticsModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="PackageDetails">
           <Key>
-            <PropertyRef Name="ID" />
+            <PropertyRef Name="PackageDetailsID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="255" />
-          <Property Name="Email" Type="nvarchar" MaxLength="255" />
-          <Property Name="Address" Type="nvarchar" MaxLength="255" />
-          <Property Name="City" Type="int" />
-          <Property Name="State" Type="int" />
-          <Property Name="ZipCode" Type="float" />
-          <Property Name="County" Type="nvarchar" MaxLength="255" />
-          <Property Name="Gender" Type="nvarchar" MaxLength="255" />
-          <Property Name="Birthday" Type="nvarchar" MaxLength="255" />
-          <Property Name="Ethnicity" Type="nvarchar" MaxLength="255" />
-          <Property Name="Desi" Type="float" />
-          <Property Name="FileName" Type="nvarchar" MaxLength="4000" />
-          <Property Name="Status" Type="int" />
-          <Property Name="EthnicityID" Type="int" />
-          <Property Name="LocationID" Type="int" />
+          <Property Name="PackageDetailsID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="200" Nullable="false" />
           <Property Name="UploadDate" Type="datetime" />
           <Property Name="ProcessedDate" Type="datetime" />
         </EntityType>
+        <Function Name="usp_InsertPackageDetails" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="FileName" Type="nvarchar" Mode="In" />
+        </Function>
         <Function Name="usp_SearchPackageDetails" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="From" Type="date" Mode="In" />
           <Parameter Name="To" Type="date" Mode="In" />
         </Function>
         <EntityContainer Name="EmailAnalyticsModelStoreContainer">
-          <EntitySet Name="Raw_Data" EntityType="Self.Raw_Data" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PackageDetails" EntityType="Self.PackageDetails" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="EmailAnalyticsModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Raw_Data">
+        <EntityType Name="PackageDetail">
           <Key>
-            <PropertyRef Name="ID" />
+            <PropertyRef Name="PackageDetailsID" />
           </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Address" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="City" Type="Int32" />
-          <Property Name="State" Type="Int32" />
-          <Property Name="ZipCode" Type="Double" />
-          <Property Name="County" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Gender" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Birthday" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Ethnicity" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Desi" Type="Double" />
-          <Property Name="FileName" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Name="Status" Type="Int32" />
-          <Property Name="EthnicityID" Type="Int32" />
-          <Property Name="LocationID" Type="Int32" />
+          <Property Name="PackageDetailsID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FileName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="UploadDate" Type="DateTime" Precision="3" />
           <Property Name="ProcessedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityContainer Name="EmailAnalyticsEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Raw_Data" EntityType="Self.Raw_Data" />
+          <EntitySet Name="PackageDetails" EntityType="Self.PackageDetail" />
+          <FunctionImport Name="usp_InsertPackageDetails">
+            <Parameter Name="FileName" Mode="In" Type="String" />
+          </FunctionImport>
           <FunctionImport Name="usp_SearchPackageDetails" ReturnType="Collection(EmailAnalyticsModel.usp_SearchPackageDetails_Result)">
             <Parameter Name="From" Mode="In" Type="DateTime" />
             <Parameter Name="To" Mode="In" Type="DateTime" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="usp_SearchPackageDetails_Result">
-          <Property Type="String" Name="FileName" Nullable="true" MaxLength="4000" />
+          <Property Type="String" Name="FileName" Nullable="false" MaxLength="200" />
           <Property Type="DateTime" Name="UploadDate" Nullable="true" Precision="23" />
           <Property Type="DateTime" Name="ProcessedDate" Nullable="true" Precision="23" />
         </ComplexType>
@@ -80,30 +59,17 @@
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="EmailAnalyticsModelStoreContainer" CdmEntityContainer="EmailAnalyticsEntities">
-          <EntitySetMapping Name="Raw_Data">
-            <EntityTypeMapping TypeName="EmailAnalyticsModel.Raw_Data">
-              <MappingFragment StoreEntitySet="Raw_Data">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Address" ColumnName="Address" />
-                <ScalarProperty Name="City" ColumnName="City" />
-                <ScalarProperty Name="State" ColumnName="State" />
-                <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
-                <ScalarProperty Name="County" ColumnName="County" />
-                <ScalarProperty Name="Gender" ColumnName="Gender" />
-                <ScalarProperty Name="Birthday" ColumnName="Birthday" />
-                <ScalarProperty Name="Ethnicity" ColumnName="Ethnicity" />
-                <ScalarProperty Name="Desi" ColumnName="Desi" />
+          <EntitySetMapping Name="PackageDetails">
+            <EntityTypeMapping TypeName="EmailAnalyticsModel.PackageDetail">
+              <MappingFragment StoreEntitySet="PackageDetails">
+                <ScalarProperty Name="PackageDetailsID" ColumnName="PackageDetailsID" />
                 <ScalarProperty Name="FileName" ColumnName="FileName" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="EthnicityID" ColumnName="EthnicityID" />
-                <ScalarProperty Name="LocationID" ColumnName="LocationID" />
                 <ScalarProperty Name="UploadDate" ColumnName="UploadDate" />
                 <ScalarProperty Name="ProcessedDate" ColumnName="ProcessedDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="usp_InsertPackageDetails" FunctionName="EmailAnalyticsModel.Store.usp_InsertPackageDetails" />
           <FunctionImportMapping FunctionImportName="usp_SearchPackageDetails" FunctionName="EmailAnalyticsModel.Store.usp_SearchPackageDetails">
             <ResultMapping>
               <ComplexTypeMapping TypeName="EmailAnalyticsModel.usp_SearchPackageDetails_Result">

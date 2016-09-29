@@ -27,7 +27,16 @@ namespace EA.DataModel
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Raw_Data> Raw_Data { get; set; }
+        public virtual DbSet<PackageDetail> PackageDetails { get; set; }
+    
+        public virtual int usp_InsertPackageDetails(string fileName)
+        {
+            var fileNameParameter = fileName != null ?
+                new ObjectParameter("FileName", fileName) :
+                new ObjectParameter("FileName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_InsertPackageDetails", fileNameParameter);
+        }
     
         public virtual ObjectResult<usp_SearchPackageDetails_Result> usp_SearchPackageDetails(Nullable<System.DateTime> from, Nullable<System.DateTime> to)
         {
