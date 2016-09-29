@@ -9,6 +9,9 @@ using System.Web.Script.Serialization;
 using System.IO;
 using System.Net;
 using Excel = Microsoft.Office.Interop.Excel;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Data;
 
 namespace EmailAnalytics.Controllers
 {
@@ -23,7 +26,7 @@ namespace EmailAnalytics.Controllers
 
         private void LogError(string message, string stackTrace)
         {
-            FileStream fs = new FileStream(Server.MapPath("~/LogError.txt"), FileMode.OpenOrCreate, FileAccess.Write);
+            FileStream fs = new FileStream(Server.MapPath("~/LogError.txt"), FileMode.Append, FileAccess.Write);
             StreamWriter writer = new StreamWriter(fs);
 
             writer.WriteLine(DateTime.Now + " / Error Message: " + message + " / Stack Trace: " + stackTrace);
@@ -80,48 +83,53 @@ namespace EmailAnalytics.Controllers
         private bool ValidateFileFormat(string path)
         {
             bool isValid = false;
+            string[] validColNames = new string[] { "Full Name", "Email", "Address", "City", "State", "Zip Code", "County", "Gender", "Birthday", "Ethnicity", "Desi" };
 
-            try
+            using (SpreadsheetDocument doc = SpreadsheetDocument.Open(path, false))
             {
-                Excel.Application excelApp;
-                Excel.Workbook excelWorkBook;
-                Excel.Worksheet excelWorkSheet;
-                Excel.Range range;
+                //Read the first Sheet from excel file.
+                Sheet sheet = doc.WorkbookPart.Workbook.Sheets.GetFirstChild<Sheet>();
 
-                int colCount = 0;
-                string[] validColNames = new string[] { "Full Name", "Email", "Address", "City", "State", "Zip Code", "County", "Gender", "Birthday", "Ethnicity", "Desi" };
-
-                excelApp = new Excel.Application();
-                excelWorkBook = excelApp.Workbooks.Open(path, 0, true, 5, "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
-                excelWorkSheet = (Excel.Worksheet)excelWorkBook.Worksheets.get_Item(1);
-                string excelSheetName = excelWorkSheet.Name;
-
-                range = excelWorkSheet.UsedRange;
-
-                if (excelSheetName == "Sheet")
+                if (sheet.Name == "Sheet")
                 {
-                    if (range.Columns.Count == validColNames.Length)
+                    isValid = true;
+                    //Get the worksheet instance.
+                    Worksheet worksheet = (doc.WorkbookPart.GetPartById(sheet.Id.Value) as WorksheetPart).Worksheet;
+
+                    //Fetch all the rows present in the worksheet.
+                    IEnumerable<Row> rows = worksheet.GetFirstChild<SheetData>().Descendants<Row>();
+
+                    //Create a new datatable.
+                    DataTable dt = new DataTable();
+
+                    int i = 0;
+
+                    //Loop through the worksheet rows.
+                    foreach (Row row in rows)
                     {
-                        for (colCount = 1; colCount <= range.Columns.Count; colCount++)
+                        //User the first row to add columns to datatable.
+                        if (row.RowIndex.Value == 1)
                         {
-                            string excelColName = (string)(range.Cells[colCount][1] as Excel.Range).Value2;
-                            string colName = validColNames[colCount - 1];
-
-                            if (excelColName == colName)
+                            foreach (Cell cell in row.Descendants<Cell>())
                             {
-                                isValid = true;
-                            }
-                            else
-                            {
-                                isValid = false;
+                                if (GetValue(doc, cell) == validColNames[i])
+                                {
+                                    isValid = true;
+                                }
+                                else
+                                {
+                                    isValid = false;
 
-                                break;
+                                    break;
+                                }
+
+                                i++;
                             }
                         }
-                    }
-                    else
-                    {
-                        isValid = false;
+                        else if (row.RowIndex.Value > 1)
+                        {
+                            break;
+                        }
                     }
                 }
                 else
@@ -129,13 +137,81 @@ namespace EmailAnalytics.Controllers
                     isValid = false;
                 }
             }
-            catch (Exception ex)
-            {
-                LogError(ex.Message, ex.StackTrace);
-            }
 
             return isValid;
         }
+
+        private string GetValue(SpreadsheetDocument doc, Cell cell)
+        {
+            string value = cell.CellValue.InnerText;
+
+            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+            {
+                return doc.WorkbookPart.SharedStringTablePart.SharedStringTable.ChildElements.GetItem(int.Parse(value)).InnerText;
+            }
+
+            return value;
+        }
+
+        //private bool ValidateFileFormat(string path)
+        //{
+        //    bool isValid = false;
+
+        //    try
+        //    {
+        //        Excel.Application excelApp;
+        //        Excel.Workbook excelWorkBook;
+        //        Excel.Worksheet excelWorkSheet;
+        //        Excel.Range range;
+
+        //        int colCount = 0;
+        //        string[] validColNames = new string[] { "Full Name", "Email", "Address", "City", "State", "Zip Code", "County", "Gender", "Birthday", "Ethnicity", "Desi" };
+
+        //        excelApp = new Excel.Application();
+        //        excelWorkBook = excelApp.Workbooks.Open(path, 0, true, 5, "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+        //        excelWorkSheet = (Excel.Worksheet)excelWorkBook.Worksheets.get_Item(1);
+        //        string excelSheetName = excelWorkSheet.Name;
+
+        //        range = excelWorkSheet.UsedRange;
+
+        //        if (excelSheetName == "Sheet")
+        //        {
+        //            if (range.Columns.Count == validColNames.Length)
+        //            {
+        //                for (colCount = 1; colCount <= range.Columns.Count; colCount++)
+        //                {
+        //                    string excelColName = (string)(range.Cells[colCount][1] as Excel.Range).Value2;
+        //                    string colName = validColNames[colCount - 1];
+
+        //                    if (excelColName == colName)
+        //                    {
+        //                        isValid = true;
+        //                    }
+        //                    else
+        //                    {
+        //                        isValid = false;
+
+        //                        break;
+        //                    }
+        //                }
+        //            }
+        //            else
+        //            {
+        //                isValid = false;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            isValid = false;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogError(ex.Message, ex.StackTrace);
+        //    }
+
+        //    return isValid;
+        //}
 
         [HttpPost]
         public ViewResult UploadPackage(HttpPostedFileBase file)

@@ -89,7 +89,7 @@
                     
                     if (fileName == null || fileName.trim().length == 0 || fileName == "undefined") {
                         alert("Select file to be uploaded");
-                    } else {
+                    } else {                        
                         $("form").attr("action", "UploadPackage");
                         $("form").attr("enctype", "multipart/form-data");
                         $("form").submit();
