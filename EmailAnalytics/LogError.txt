@@ -1,0 +1,4 @@
+29-09-2016 03:57:11 PM / Error Message: '' could not be found. Check the spelling of the file name, and verify that the file location is correct.
+
+If you are trying to open the file from your list of most recently used files, make sure that the file has not been renamed, moved, or deleted. / Stack Trace:    at Microsoft.Office.Interop.Excel.Workbooks.Open(String Filename, Object UpdateLinks, Object ReadOnly, Object Format, Object Password, Object WriteResPassword, Object IgnoreReadOnlyRecommended, Object Origin, Object Delimiter, Object Editable, Object Notify, Object Converter, Object AddToMru, Object Local, Object CorruptLoad)
+   at EmailAnalytics.Controllers.HomeController.ValidateFileFormat(FormCollection form) in e:\EmailAnalytics\EmailAnalytics\Controllers\HomeController.cs:line 97
