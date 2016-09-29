@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "Search Package";
+}
+
+<h2>Search Package</h2>
+<link href="~/Content/jquery-ui/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/jquery-ui/themes/base/base.css" rel="stylesheet" />
+<link href="~/Content/jqwidgets/jqwidgets/styles/jqx.base.css" rel="stylesheet" />
+<script src="~/Content/jqwidgets/jqwidgets/jqx-all.js"></script>
+<script src="~/Content/jquery-ui/jquery-ui.min.js"></script>
+<script src="~/Content/jqwidgets/jqwidgets/jqxcore.js"></script>
+<script src="~/Content/jqwidgets/jqwidgets/jqxdatetimeinput.js"></script>
+<script src="~/Content/jqwidgets/jqwidgets/jqxcalendar.js"></script>
+<div class="col-md-12">
+    <fieldset>
+        <legend>By Date</legend>
+        @using (Html.BeginForm("PackageDetails", "Home", "POST"))
+        {
+            <div class="panel panel-success">
+                <div class="panel-body">
+                    <div class="col-md-6">
+                        <div class="col-md-4">From Date</div>
+                        <div class="col-md-8"><div id='jqxCalendarFrom' class="form-control"></div></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="col-md-4">To Date</div>
+                        <div class="col-md-8"><div id='jqxCalendarTo' class="form-control"></div></div>
+                        <input type="hidden" value="1" name="ReqType" />
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-9">&nbsp;</div>
+                        <div class="col-md-3" style="margin-top:30px; padding-left:8%;"><input type="submit" class="btn btn-success" id="btnSearch" value="Search" /> </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </fieldset>
+
+    <script type="text/javascript">
+        $("#jqxCalendarFrom, #jqxCalendarTo").jqxDateTimeInput({ height: '16px', animationType: "slide", formatString: "MM-dd-yyyy" });
+        $(".jqx-icon.jqx-icon-calendar").parent().css("width", "50px");
+        $("#jqxCalendarFrom input").attr("name", "fromDate");
+        $("#jqxCalendarTo input").attr("name", "toDate");
+        $("#jqxCalendarFrom").on("valueChanged", function (event) {
+        });
+        $("#jqxCalendarTo").on("valueChanged", function (event) {
+        });
+
+        $(function () {
+            $("#btnSearch").click(function (event) {
+                event.preventDefault();
+
+                var fromDate = $("#jqxCalendarFrom").val().split("-");
+                var toDate = $("#jqxCalendarTo").val().split("-");
+
+                from = new Date(fromDate[2], fromDate[0] - 1, fromDate[1]);
+                to = new Date(toDate[2], toDate[0] - 1, toDate[1]);
+
+                if (from > to) {
+                    alert("From date should be smaller than to date");
+                } else if (to > new Date()) {
+                    alert("Date shouldn't be greater than today");
+                } else {
+                    $("form").submit();
+                }
+            });
+        });
+    </script>
+
+</div>

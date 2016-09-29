@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "Package Details";
+}
+
+<h2>Package Details</h2>
+<link href="~/Content/jquery-ui/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/jquery-ui/themes/base/base.css" rel="stylesheet" />
+<link href="~/Content/jqwidgets/jqwidgets/styles/jqx.base.css" rel="stylesheet" />
+<script src="~/Content/jqwidgets/jqwidgets/jqx-all.js"></script>
+<script src="~/Content/jquery-ui/jquery-ui.min.js"></script>
+<script src="~/Content/jqwidgets/jqwidgets/jqxcore.js"></script>
+<script src="~/Content/jqwidgets/jqwidgets/jqxdatetimeinput.js"></script>
+<script src="~/Content/jqwidgets/jqwidgets/jqxcalendar.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var source = {
+            datatype: "json",
+            datafields: [
+                { name: "FileName", type: "string" },
+                { name: "UploadDate", type: "string" },
+                { name: "ProcessedDate", type: "string" }
+            ],
+            url: "/Home/GetPackageList"
+        };
+
+        var dataAdapter = new $.jqx.dataAdapter(source);
+
+        $("#jqxPackageDetails").jqxGrid({
+            source: dataAdapter,
+            columns: [
+                { text: "File Name", datafield: "FileName", width: "50%" },
+                { text: "Upload Date", datafield: "UploadDate" },
+                { text: "Processed Date", datafield: "ProcessedDate" }
+            ],
+            width: "100%"
+        });
+    });
+</script>
+
+<div class="panel panel-success">
+    <div class="col-md-11"></div>
+    <div class="col-md-1">
+        @Html.ActionLink("Back", "SearchPackage")
+    </div>
+    <div class="panel-body">
+        <div class="col-md-12">
+            <div id="jqxPackageDetails"></div>
+        </div>
+    </div>
+</div>
